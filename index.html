@@ -1,127 +1,309 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="utf-8">
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | dino-rush</title>
-    <link rel="shortcut icon" href="TemplateData/favicon.ico">
-    <link rel="stylesheet" href="TemplateData/style.css">
-  </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
-      </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-logo-title-footer"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">dino-rush</div>
-      </div>
+    <title>dino-rush</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+        }
+
+        #unity-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #loading-bar {
+            width: 100%;
+            text-align: center;
+            color: white;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* Splash screen styles */
+        #splash-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #splash-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Loading Screen styles */
+        #loading-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 5;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #loading-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #loading-bar-wrapper {
+            position: absolute;
+            top: 90%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            text-align: center;
+            z-index: 10;
+            font-family: 'Orbitron', sans-serif;
+            flex-direction: column;
+        }
+
+        #loading-text {
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px #82ff00;
+            margin-left: 20px;
+        }
+
+        #loading-bar {
+            position: relative;
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+        }
+
+        #loading-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #78DF0D, #a4e034);
+            transition: width 0.3s ease;
+            clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+        }
+
+        #loading-glow {
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
+            animation: shine 0.5s infinite linear;
+        }
+
+        @keyframes shine {
+            from {
+                left: -50%;
+            }
+
+            to {
+                left: 100%;
+            }
+        }
+
+        /* #loading-edge-shine {
+            position: absolute;
+            top: 0;
+            right: -8px;
+            width: 16px;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            pointer-events: none;
+            animation: shine-pulse 1s infinite ease-in-out;
+            mix-blend-mode: screen;
+        }
+
+        @keyframes shine-pulse {
+
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scaleY(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scaleY(1.3);
+            }
+        }
+
+        #final-flare {
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, transparent 80%);
+            border-radius: 50%;
+            transform: translateY(-50%) scale(0);
+            pointer-events: none;
+            opacity: 0;
+            mix-blend-mode: screen;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            z-index: 2;
+        } */
+    </style>
+</head>
+
+<body>
+    <!-- Splash screen -->
+    <div id="splash-screen">
+        <video id="splash-video" autoplay muted playsinline>
+            <source src="dino-rush-splash.mp4" type="video/mp4" />
+            Tu navegador no soporta el video.
+        </video>
     </div>
+
+    <!-- Loading video background -->
+    <div id="loading-video-container" style="display: none;">
+        <video id="loading-video" autoplay muted loop playsinline>
+            <source src="loading-screen.mp4" type="video/mp4" />
+            Tu navegador no soporta el video.
+        </video>
+    </div>
+
+    <!-- Unity container -->
+    <div id="unity-container">
+        <canvas id="unity-canvas"></canvas>
+        <div id="loading-bar-wrapper" style="display: none;">
+            <div id="loading-text">LOADING...</div>
+            <div id="loading-bar">
+                <div id="loading-fill">
+                    <div id="loading-glow"></div>
+                    <!-- <div id="loading-edge-shine"></div> -->
+                    <!-- <div id="final-flare"></div> -->
+                </div>
+            </div>
+        </div>
+        <!-- <div id="loading-bar">Loading...</div> -->
+    </div>
+
     <script>
-      var canvas = document.querySelector("#unity-canvas");
+        const buildUrl = "Build";
+        const loaderUrl = buildUrl + "/v0.0.2.loader.js";
+        const config = {
+            dataUrl: buildUrl + "/v0.0.2.data.br",
+            frameworkUrl: buildUrl + "/v0.0.2.framework.js.br",
+            codeUrl: buildUrl + "/v0.0.2.wasm.br",
+            streamingAssetsUrl: "StreamingAssets",
+            companyName: "ZimpleGames",
+            productName: "dino-rush",
+            productVersion: "0.0.2",
+        };
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        var warningBanner = document.querySelector("#unity-warning");
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        const canvas = document.querySelector("#unity-canvas");
+        const loadingBar = document.querySelector("#loading-bar-wrapper");
+        let unityInstance = null;
+
+        // Splash screen logic
+        const splashVideo = document.getElementById("splash-video");
+        const splashScreen = document.getElementById("splash-screen");
+
+        // Loading Screen
+        const loadingVideoContainer = document.getElementById("loading-video-container");
+
+        // Cuando termine el video de splash, empezamos a cargar Unity
+        splashVideo.onended = () => {
+            splashScreen.style.display = "none";
+            // Mostramos Loading Screen y barra de progreso
+            loadingVideoContainer.style.display = "block";
+            loadingBar.style.display = "flex";
+            startUnity();
+        };
+
+        // Optional: allow skipping the splash screen on click or key press
+        // splashVideo.addEventListener("click", skipSplash);
+        // document.addEventListener("keydown", skipSplash);
+
+        function skipSplash() {
+            splashVideo.pause();
+            splashScreen.style.display = "none";
+            startUnity();
         }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
 
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/v0.0.1.loader.js";
-      var config = {
-        arguments: [],
-        dataUrl: buildUrl + "/v0.0.1.data.br",
-        frameworkUrl: buildUrl + "/v0.0.1.framework.js.br",
-        codeUrl: buildUrl + "/v0.0.1.wasm.br",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "ZimpleGames",
-        productName: "dino-rush",
-        productVersion: "0.0.1",
-        showBanner: unityShowBanner,
-      };
-
-      // By default, Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
-
-      // If you would like all file writes inside Unity Application.persistentDataPath
-      // directory to automatically persist so that the contents are remembered when
-      // the user revisits the site the next time, uncomment the following line:
-      // config.autoSyncPersistentDataPath = true;
-      // This autosyncing is currently not the default behavior to avoid regressing
-      // existing user projects that might rely on the earlier manual
-      // JS_FileSystem_Sync() behavior, but in future Unity version, this will be
-      // expected to change.
-
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        document.querySelector("#unity-container").className = "unity-mobile";
-        canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
-
-      document.querySelector("#unity-loading-bar").style.display = "block";
-
-      var script = document.createElement("script");
-      script.src = loaderUrl;
-      script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
-          document.querySelector("#unity-progress-bar-full").style.width = 100 * progress + "%";
-              }).then((unityInstance) => {
-                document.querySelector("#unity-loading-bar").style.display = "none";
-                document.querySelector("#unity-fullscreen-button").onclick = () => {
-                  unityInstance.SetFullscreen(1);
-                };
-
-              }).catch((message) => {
-                alert(message);
-              });
+        function startUnity() {
+            const script = document.createElement("script");
+            script.src = loaderUrl;
+            script.onload = () => {
+                createUnityInstance(canvas, config, (progress) => {
+                    const percent = Math.floor(progress * 100);
+                    document.getElementById("loading-fill").style.width = percent + "%";
+                }).then((instance) => {
+                    unityInstance = instance;
+                    // Ocultar video de fondo y barra de carga al finalizar
+                    loadingVideoContainer.style.display = "none";
+                    loadingBar.style.display = "none";
+                    sendUrlIdToUnity();
+                });
             };
+            document.body.appendChild(script);
+        }
 
-      document.body.appendChild(script);
+        function sendUrlIdToUnity() {
+            let id = "";
 
+            // Se usa solo cuando viene bien el param en la url player_id=encrypted_id
+            // const params = new URLSearchParams(window.location.search);
+            // id = params.get("player_id");
+            // if (!id || id.trim() === "") {
+            //     id = "no_player_id_provided"; 
+            // }
+
+            // Se usa solo cuando viene todo el texto encriptado id=magento_id
+            let encryptedValue = window.location.search;
+            // Elimina el carácter '?' del inicio
+            if (encryptedValue.startsWith('?')) {
+                id = encryptedValue.substring(1);
+            }
+
+            if (!encryptedValue || encryptedValue.trim() === "") {
+                id = "no_player_id_provided"; 
+            }
+
+            console.log("ID RECEIVED => " + id);
+            if (unityInstance) {
+                unityInstance.SendMessage("ApiManager", "GetPlayerIdEncrypted", id);
+            }
+        }
     </script>
-  </body>
+</body>
+
 </html>
